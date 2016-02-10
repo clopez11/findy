@@ -60,6 +60,10 @@ $(document).ready(function(){
           type: 'DELETE',
           success: function(result) {
             console.log('deleted successfully');
+            hide_contacts();
+            $.getJSON('/contacts.json', function(data){
+              list_contacts(data);
+            });
           }
         });
       })
