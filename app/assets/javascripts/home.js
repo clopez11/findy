@@ -50,8 +50,19 @@ $(document).ready(function(){
       var first_name = "<li> First Name: " + data[i].first_name + "</li>";
       var last_name = "<li> Last Name: " + data[i].last_name + "</li>";
       var phone_number = "<li> Phone Number: " + data[i].phone_number + "</li>";
+      var delete_contact = "<li><button class='delete_contact_button' data-contact-id=" + i + ">Delete</button></li>";
       var close_ul = "</ul>"
-      $('.home').append(open_ul, first_name, last_name, phone_number, email, close_ul)
+      $('.home').append(open_ul, first_name, last_name, phone_number, email, delete_contact, close_ul)
+      $('.delete_contact_button').on('click', function(){
+        var contact_pos = this.getAttribute("data-contact-id");
+        $.ajax({
+          url: '/contacts/' + data[contact_pos].id + '.json',
+          type: 'DELETE',
+          success: function(result) {
+            console.log('deleted successfully');
+          }
+        });
+      })
     }
   };
   function hide_contacts(){
