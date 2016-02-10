@@ -2,6 +2,7 @@ $(document).ready(function(){
 
   $('#hide_index').hide();
   $('#index').on('click', function(){
+    hide_contacts();
     $('#hide_index').show();
     $('#index').hide();
     $.getJSON('/contacts.json', function(data){
@@ -15,15 +16,17 @@ $(document).ready(function(){
   });
   $("#new").on('click', function(){
     hide_contacts();
+    $('#hide_index').hide();
+    $('#index').show();
     var open_ul = "<ul>"
     var email = "<li> Email: <input type='text' id='email'></li>";
     var first_name = "<li> First Name: <input type='text' id='first_name'></li>";
     var last_name = "<li> Last Name: <input type='text' id='last_name'></li>";
     var phone_number = "<li> Phone Number: <input type='number' id='phone_number'></li>";
-    var update_and_delete = "<li><button id='submit_new_contact'>Add</button></li>";
+    var add_new = "<li><button id='submit_new_contact' class='btn btn-xs btn-success'>Add</button></li>";
     var close_ul = "</ul>"
     // contact.first_name = 
-    $('.home').append(open_ul, email, first_name, last_name, phone_number, update_and_delete, close_ul);
+    $('.home').append(open_ul, first_name, last_name, phone_number, email, add_new, close_ul);
     $("#submit_new_contact").on('click', function(){
       var contact = {};
       contact.email = $("#email").val();
@@ -78,11 +81,11 @@ $(document).ready(function(){
   function list_contacts(data){
     for (i = 0; i < data.length; i++){
       var open_ul = "<ul>"
-      var email = "<li> Email: " + data[i].email + "</li>";
-      var first_name = "<li> First Name: " + data[i].first_name + "</li>";
-      var last_name = "<li> Last Name: " + data[i].last_name + "</li>";
-      var phone_number = "<li> Phone Number: " + data[i].phone_number + "</li>";
-      var update_and_delete = "<li><button class='update_contact_button' data-contact-id=" + i + ">Update</button> <button class='delete_contact_button' data-contact-id=" + i + ">Delete</button></li>";
+      var email = "<li>Email: <input type='text' id='email_" + i + "' value =" + data[i].email + "></li>";
+      var first_name = "<li> First Name: <input type='text' id='fname_" + i + "' value =" + data[i].first_name + "></li>";
+      var last_name = "<li> Last Name: <input type='text' id='lname_" + i + "' value =" + data[i].last_name + "></li>";
+      var phone_number = "<li> Phone Number: <input type='text' id='pnumber_" + i + "' value =" + data[i].phone_number + "></li>";
+      var update_and_delete = "<li><button class='update_contact_button btn btn-xs btn-info' data-contact-id=" + i + ">Update</button> <button class='delete_contact_button btn btn-xs btn-danger' data-contact-id=" + i + ">Delete</button></li>";
       var close_ul = "</ul>"
       $('.home').append(open_ul, first_name, last_name, phone_number, email, update_and_delete, close_ul)
       $('.delete_contact_button').on('click', function(){
@@ -101,9 +104,16 @@ $(document).ready(function(){
       });
       $('.update_contact_button').on('click', function(){
         var contact_pos = this.getAttribute("data-contact-id");
+        var contact = {};
+        contact.email = $("#email_" + contact_pos).val();
+        contact.first_name = $("#fname_" + contact_pos).val();
+        contact.last_name = $("#lname_" + contact_pos).val();
+        contact.phone_number = $("#pnumber_" + contact_pos).val();
+        contact = {contact: contact}
         $.ajax({
           url: '/contacts/' + data[contact_pos].id + '.json',
           type: 'PATCH',
+          data: contact,
           success: function(result) {
             console.log('update successfully');
             hide_contacts();
